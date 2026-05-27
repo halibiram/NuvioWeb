@@ -33,6 +33,7 @@ import { I18n } from "./i18n/index.js";
 const GUEST_QR_BYPASS_KEY = "skipAuthQrGate";
 const SIGNED_OUT_ALLOWED_ROUTES = new Set(["trakt"]);
 let hasSelectedProfileThisSession = false;
+let appShellRendered = false;
 
 function isSignedOutRouteAllowed() {
   return SIGNED_OUT_ALLOWED_ROUTES.has(Router.getCurrent());
@@ -116,6 +117,7 @@ async function routeAfterAuthentication() {
 
 async function bootstrapApp() {
   renderAppShell();
+  appShellRendered = true;
   Platform.init();
   applyPerformanceMode();
   await I18n.init();
@@ -173,6 +175,7 @@ async function bootstrapApp() {
 
 async function bootstrapAddonRemoteMode() {
   await renderAddonRemotePage();
+  appShellRendered = true;
 }
 
 if (document.readyState === "loading") {
@@ -195,9 +198,17 @@ window.addEventListener("error", (event) => {
   if (!event?.error) {
     return;
   }
-  renderFatalError(event.error);
+  if (!appShellRendered) {
+    renderFatalError(event.error);
+    return;
+  }
+  console.warn("Unhandled runtime error", event.error);
 });
 
 window.addEventListener("unhandledrejection", (event) => {
-  renderFatalError(event?.reason);
+  if (!appShellRendered) {
+    renderFatalError(event?.reason);
+    return;
+  }
+  console.warn("Unhandled promise rejection", event?.reason);
 });
