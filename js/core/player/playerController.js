@@ -1460,6 +1460,18 @@ export const PlayerController = {
 
     if (this.isLikelyHlsMimeType(normalizedSourceType)) {
       const candidates = [];
+      if (isTizenRuntime) {
+        if (canPlayNativeHls) {
+          pushCandidate(candidates, "native-hls");
+        }
+        if (canUseHlsJs) {
+          pushCandidate(candidates, "hls.js");
+        }
+        if (canUseAvPlay) {
+          pushCandidate(candidates, avplayEngine);
+        }
+        return candidates;
+      }
       if (preferTvNative && canUseAvPlay) {
         pushCandidate(candidates, avplayEngine);
       }
@@ -1483,6 +1495,18 @@ export const PlayerController = {
 
     if (this.isLikelyDashMimeType(normalizedSourceType)) {
       const candidates = [];
+      if (isTizenRuntime) {
+        if (canPlayNativeDash) {
+          pushCandidate(candidates, "native-dash");
+        }
+        if (canUseDashJs) {
+          pushCandidate(candidates, "dash.js");
+        }
+        if (canUseAvPlay) {
+          pushCandidate(candidates, avplayEngine);
+        }
+        return candidates;
+      }
       if (preferTvNative && canUseAvPlay) {
         pushCandidate(candidates, avplayEngine);
       }
@@ -1516,9 +1540,6 @@ export const PlayerController = {
     }
 
     const candidates = [];
-    if (isTizenRuntime && canUseAvPlay) {
-      pushCandidate(candidates, avplayEngine);
-    }
     pushCandidate(candidates, "native-file");
     if (!isTizenRuntime && canUseAvPlay) {
       pushCandidate(candidates, avplayEngine);

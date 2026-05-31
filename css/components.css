@@ -14186,6 +14186,67 @@ button:focus-visible {
   transform: none !important;
 }
 
+.legacy-tizen .stream-route-shell {
+  width: 1920px;
+  height: 1080px;
+}
+
+.legacy-tizen .stream-route-backdrop {
+  transform: none !important;
+}
+
+.legacy-tizen .stream-route-content {
+  display: -webkit-box;
+  display: flex;
+  padding: 56px 64px;
+}
+
+.legacy-tizen .stream-route-left {
+  width: 560px;
+  flex: 0 0 560px;
+  padding-right: 44px;
+}
+
+.legacy-tizen .stream-route-left-inner {
+  width: 420px;
+  max-width: 420px;
+}
+
+.legacy-tizen .stream-route-logo {
+  width: 420px;
+  max-width: 420px;
+  max-height: 150px;
+}
+
+.legacy-tizen .stream-route-right {
+  width: 1232px;
+  flex: 0 0 1232px;
+  max-width: 1232px;
+}
+
+.legacy-tizen .stream-route-chip-wrap {
+  height: 78px;
+  margin-bottom: 20px;
+}
+
+.legacy-tizen .stream-route-panel-shell {
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+  border-radius: 18px;
+}
+
+.legacy-tizen .stream-route-list {
+  -webkit-overflow-scrolling: auto;
+  transform: none !important;
+  will-change: auto;
+}
+
+.legacy-tizen .stream-route-card,
+.legacy-tizen .stream-route-card.focused {
+  transform: none !important;
+}
+
 .stream-route-card.focused {
   transform: scale(1.005);
   border-color: var(--secondary-color);

@@ -1233,6 +1233,7 @@ export const PlayerScreen = {
     this.embeddedTrackRequestPromise = null;
     this.embeddedTrackRequestUrl = "";
     this.lastEmbeddedTrackProbeUrl = "";
+    this.lastEmbeddedTrackRetryAt = 0;
     this.manifestLoadToken = 0;
     this.manifestLoading = false;
     this.manifestAudioTracks = [];
@@ -3028,10 +3029,6 @@ export const PlayerScreen = {
     if (!this.params?.itemId && !this.params?.videoId) {
       return false;
     }
-    if (this.params?.returnToStreamOnBack && Router.historyInitialized) {
-      void Router.back({ skipConsume: true });
-      return true;
-    }
     void Router.navigate("stream", this.buildStreamRouteParamsFromPlayer(), {
       skipStackPush: true,
       replaceHistory: true
@@ -3887,8 +3884,6 @@ export const PlayerScreen = {
     });
 
     base.push({ action: "source", icon: "assets/icons/ic_player_source.svg", title: t("sources_title", {}, "Sources") });
-
-    base.push({ action: "switchEngine", label: "<>", title: t("cd_switch_player_engine", {}, "Switch player engine") });
 
     if (Array.isArray(uiState.episodesAll) && uiState.episodesAll.length) {
       base.push({ action: "episodes", icon: "assets/icons/ic_player_episodes.svg", title: t("episodes_panel_title", {}, "Episodes") });
@@ -4815,6 +4810,7 @@ export const PlayerScreen = {
     this.embeddedTrackRequestPromise = null;
     this.embeddedTrackRequestUrl = "";
     this.lastEmbeddedTrackProbeUrl = "";
+    this.lastEmbeddedTrackRetryAt = 0;
     this.lastTrackWarmupAt = Date.now();
     const embeddedSubtitleWarmupPromise = this.loadEmbeddedSubtitleTracks();
     this.initialEmbeddedTrackBootstrapPromise = embeddedSubtitleWarmupPromise;
@@ -5067,12 +5063,26 @@ export const PlayerScreen = {
         return;
       }
 
-      const doneByData = this.hasAudioTracksAvailable() || this.hasSubtitleTracksAvailable();
+      const now = Date.now();
+      const shouldRetryEmbeddedSubtitles = this.canDiscoverEmbeddedSubtitleTracks()
+        && this.embeddedSubtitleTracks.length <= 0
+        && !this.embeddedSubtitleLoading;
+      if (
+        shouldRetryEmbeddedSubtitles
+        && (now - Number(this.lastEmbeddedTrackRetryAt || 0)) >= 1200
+      ) {
+        this.lastEmbeddedTrackRetryAt = now;
+        this.loadEmbeddedSubtitleTracks();
+      }
+
+      const doneByData = this.hasSubtitleTracksAvailable()
+        || (this.hasAudioTracksAvailable() && !shouldRetryEmbeddedSubtitles);
       const doneByIdle = !this.subtitleLoading
         && !this.embeddedSubtitleLoading
         && !this.manifestLoading
-        && (Date.now() - Number(this.trackDiscoveryStartedAt || 0)) >= 1200;
-      const doneByTimeout = Date.now() >= this.trackDiscoveryDeadline;
+        && !shouldRetryEmbeddedSubtitles
+        && (now - Number(this.trackDiscoveryStartedAt || 0)) >= 1200;
+      const doneByTimeout = now >= this.trackDiscoveryDeadline;
       this.refreshTrackDialogs();
 
       if (doneByData || doneByIdle || doneByTimeout) {
@@ -6259,14 +6269,33 @@ export const PlayerScreen = {
     return Array.from(new Set(targets));
   },
 
-  getStartupForcedSubtitleLanguageTargets() {
-    const targets = [];
-    const selectedAudioOption = this.collectAudioOptionItems().find((entry) => entry.selected && entry.languageKey);
-    if (selectedAudioOption?.languageKey) {
-      targets.push(selectedAudioOption.languageKey);
+  shouldUseStartupForcedSubtitles(settings = PlayerSettingsStore.get()) {
+    const preferred = extractSubtitleLanguageSetting(settings.subtitleStyle?.preferredLanguage || settings.subtitleLanguage || "off").trim().toLowerCase();
+    const secondary = extractSubtitleLanguageSetting(settings.subtitleStyle?.secondaryPreferredLanguage || settings.secondarySubtitleLanguage || "off").trim().toLowerCase();
+    return Boolean(settings.subtitleStyle?.useForcedSubtitles || settings.useForcedSubtitles)
+      || preferred === "forced"
+      || secondary === "forced";
+  },
+
+  getStartupForcedSubtitleLanguageTarget() {
+    const settings = PlayerSettingsStore.get();
+    if (!settings.subtitlesEnabled || !this.shouldUseStartupForcedSubtitles(settings)) {
+      return null;
     }
-    targets.push(...this.getStartupPreferredAudioLanguageTargets());
-    return Array.from(new Set(targets.filter(Boolean)));
+
+    const explicitTargets = this.getStartupPreferredSubtitleLanguageTargets();
+    const selectedAudioOption = this.collectAudioOptionItems().find((entry) => entry.selected && entry.languageKey);
+    const primaryTarget = explicitTargets[0] || null;
+    if (primaryTarget && selectedAudioOption && this.matchesStartupAudioTarget(selectedAudioOption, primaryTarget)) {
+      return primaryTarget;
+    }
+
+    const preferredAudioTargets = this.getStartupPreferredAudioLanguageTargets();
+    if (!primaryTarget && selectedAudioOption && preferredAudioTargets.some((target) => this.matchesStartupAudioTarget(selectedAudioOption, target))) {
+      return selectedAudioOption.languageKey;
+    }
+
+    return null;
   },
 
   getStartupSubtitlePreferenceMode() {
@@ -6274,11 +6303,14 @@ export const PlayerScreen = {
     if (!settings.subtitlesEnabled) {
       return "off";
     }
+    if (this.getStartupForcedSubtitleLanguageTarget()) {
+      return "audio-forced";
+    }
     const explicitTargets = this.getStartupPreferredSubtitleLanguageTargets();
     if (explicitTargets.length) {
       return "language";
     }
-    return "audio-forced";
+    return "off";
   },
 
   getStartupPreferredAudioLanguageTargets() {
@@ -6431,16 +6463,6 @@ export const PlayerScreen = {
       if (internalMatch) return internalMatch;
       const addonMatch = findMatch(target, { sourceType: "addon", forced: false });
       if (addonMatch) return addonMatch;
-      const forcedInternal = findMatch(target, { sourceType: "internal", forced: true });
-      if (forcedInternal) return forcedInternal;
-      const forcedAddon = findMatch(target, { sourceType: "addon", forced: true });
-      if (forcedAddon) return forcedAddon;
-    }
-
-    if (mode === "audio-forced") {
-      return options.find((entry) => entry.sourceType === "internal" && entry.isForced)
-        || options.find((entry) => entry.sourceType === "addon" && entry.isForced)
-        || null;
     }
 
     return null;
@@ -6473,10 +6495,17 @@ export const PlayerScreen = {
     }
 
     const preferenceMode = this.getStartupSubtitlePreferenceMode();
-    const preferredTargets = preferenceMode === "audio-forced"
-      ? this.getStartupForcedSubtitleLanguageTargets()
+    const forcedTarget = preferenceMode === "audio-forced"
+      ? this.getStartupForcedSubtitleLanguageTarget()
+      : null;
+    const preferredTargets = forcedTarget
+      ? [forcedTarget]
       : this.getStartupPreferredSubtitleLanguageTargets();
     const isStillLoading = this.isSubtitlePreferenceDiscoveryPending();
+
+    if (this.shouldUseStartupForcedSubtitles() && !this.collectAudioOptionItems().some((entry) => entry.selected && entry.languageKey) && this.isAudioPreferenceDiscoveryPending()) {
+      return false;
+    }
 
     if (preferenceMode === "off") {
       if (this.selectedSubtitleTrackIndex >= 0 || this.selectedEmbeddedSubtitleTrackIndex >= 0 || this.selectedAddonSubtitleId || this.selectedManifestSubtitleTrackId) {

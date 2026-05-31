@@ -2,7 +2,7 @@
   "name": "nuvio-tv-web",
   "private": true,
   "type": "module",
-  "version": "2.0.0",
+  "version": "0.2.0",
   "scripts": {
     "build": "node ./scripts/build.mjs",
     "build:on-release": "node ./scripts/release-build-poller.mjs",
@@ -10,12 +10,12 @@
     "inspect:webos": "node ./scripts/ares-inspect-webos.mjs",
     "logs:webos": "node ./scripts/ares-logs-webos.mjs",
     "media:webos-sim": "node --require ./scripts/localhost-listen-patch.cjs ./services/space.nuvio.webos.service/runtime/media-http.cjs",
+    "package:tizen": "npm run build && node ./scripts/package-tizen.mjs",
     "package:webos": "npm run build && node ./scripts/package-webos.mjs",
     "serve": "node ./scripts/serve.mjs",
     "sync": "node ./scripts/sync-wrapper.mjs",
     "sync:tizen": "node ./scripts/sync-wrapper.mjs --tizen",
-    "sync:webos": "node ./scripts/sync-wrapper.mjs --webos",
-    "sync:tizenbrew": "node ./scripts/sync-tizenbrew.mjs"
+    "sync:webos": "node ./scripts/sync-wrapper.mjs --webos"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "intersection-observer": "^0.12.2",
+    "jszip": "^3.10.1",
     "whatwg-fetch": "^3.6.20"
   }
 }
