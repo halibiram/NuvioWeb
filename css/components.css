@@ -13756,10 +13756,13 @@ button:focus-visible {
 }
 
 .legacy-webos .player-clock {
-  font-size: 36px;
+  font-size: 26px; /* ATV 13sp -> 26px */
 }
 
-.legacy-webos .player-ends-at,
+.legacy-webos .player-ends-at {
+  font-size: 20px; /* ATV 10sp -> 20px */
+}
+
 .legacy-webos .player-control-label,
 .legacy-webos .player-skip-intro-label,
 .legacy-webos .player-next-episode-pill,
@@ -13971,10 +13974,13 @@ button:focus-visible {
   }
 
   .player-clock {
-    font-size: 36px;
+    font-size: 26px; /* ATV 13sp -> 26px */
   }
 
-  .player-ends-at,
+  .player-ends-at {
+    font-size: 20px; /* ATV 10sp -> 20px */
+  }
+
   .player-control-label,
   .player-skip-intro-label,
   .player-next-episode-pill,
