@@ -118,7 +118,8 @@ async function stageApp() {
 
   await Promise.all([
     cp(path.join(rootDir, "assets", "images", "icon.png"), path.join(appStageDir, "icon.png")),
-    cp(path.join(rootDir, "assets", "images", "largeIcon.png"), path.join(appStageDir, "largeIcon.png"))
+    cp(path.join(rootDir, "assets", "images", "largeIcon.png"), path.join(appStageDir, "largeIcon.png")),
+    cp(path.join(rootDir, "assets", "images", "splash.png"), path.join(appStageDir, "splash.png"))
   ]);
 
   const webOsScriptPath = await resolveWebOsScriptPath(appStageDir);
