@@ -83,6 +83,14 @@ function getProfileInitial(name) {
   return trimmed ? trimmed.charAt(0).toUpperCase() : "?";
 }
 
+function resolveProfileAvatarUrl(profile, avatarUrlResolver) {
+  const avatarUrl = String(profile?.avatarUrl || "").trim();
+  if (avatarUrl) {
+    return avatarUrl;
+  }
+  return avatarUrlResolver(profile?.avatarId);
+}
+
 const centeredScrollAnimations = new WeakMap();
 
 function animateScrollTop(container, clampedTarget, duration = 220) {
@@ -408,7 +416,7 @@ export const ProfileSelectionScreen = {
   },
 
   renderProfileCard(profile) {
-    const avatarUrl = this.getAvatarImageUrl(profile.avatarId);
+    const avatarUrl = resolveProfileAvatarUrl(profile, (avatarId) => this.getAvatarImageUrl(avatarId));
     return `
       <div class="profile-card profile-focusable focusable"
            data-profile-id="${escapeHtml(profile.id)}"
@@ -456,7 +464,11 @@ export const ProfileSelectionScreen = {
       : t("profile_create_btn", {}, "Create");
     const previewName = String(this.editorState.name || "").trim() || t("profile_name_placeholder", {}, "Profile name");
     const selectedAvatar = this.getEditorSelectedAvatar();
-    const previewAvatarUrl = selectedAvatar?.imageUrl || this.getAvatarImageUrl(this.editorState.selectedAvatarId) || null;
+    const hasChangedAvatarSelection = this.editorState.selectedAvatarId !== this.editorState.baseAvatarId;
+    const previewAvatarUrl = selectedAvatar?.imageUrl
+      || (!hasChangedAvatarSelection
+        ? (String(this.editorState.originalAvatarUrl || "").trim() || this.getAvatarImageUrl(this.editorState.baseAvatarId) || null)
+        : null);
     const overlayHeading = this.editorState.mode === "edit"
       ? `
           <div class="profile-editor-heading-stack">
@@ -1086,9 +1098,11 @@ export const ProfileSelectionScreen = {
       mode: "create",
       profileId: null,
       originalName: "",
+      originalAvatarUrl: null,
       name: "",
       selectedColorHex: "#1E88E5",
       selectedAvatarId: null,
+      baseAvatarId: null,
       baseColorHex: "#1E88E5",
       category: "all",
       focusedAvatarName: null
@@ -1107,9 +1121,11 @@ export const ProfileSelectionScreen = {
       mode: "edit",
       profileId: String(profile.id),
       originalName: String(profile.name || ""),
+      originalAvatarUrl: String(profile.avatarUrl || "").trim() || null,
       name: String(profile.name || ""),
       selectedColorHex: String(profile.avatarColorHex || getDefaultProfileColor()),
       selectedAvatarId: profile.avatarId || null,
+      baseAvatarId: profile.avatarId || null,
       baseColorHex: String(profile.avatarColorHex || getDefaultProfileColor()),
       category: "all",
       focusedAvatarName: null
@@ -1587,13 +1603,17 @@ export const ProfileSelectionScreen = {
         ...existing,
         name: trimmedName,
         avatarColorHex: editorState.selectedColorHex || getDefaultProfileColor(),
-        avatarId: editorState.selectedAvatarId || null
+        avatarId: editorState.selectedAvatarId || null,
+        avatarUrl: editorState.selectedAvatarId !== editorState.baseAvatarId
+          ? null
+          : (String(existing.avatarUrl || "").trim() || null)
       });
     } else {
       success = await ProfileManager.createProfile({
         name: trimmedName,
         avatarColorHex: editorState.selectedColorHex || getDefaultProfileColor(),
-        avatarId: editorState.selectedAvatarId || null
+        avatarId: editorState.selectedAvatarId || null,
+        avatarUrl: null
       });
     }
 

@@ -119,7 +119,8 @@ export async function getSidebarProfileState() {
   const activeProfile = profiles.find((profile) => String(profile.id || profile.profileIndex || "1") === activeProfileId)
     || profiles[0]
     || null;
-  const activeProfileAvatarUrl = AvatarRepository.getAvatarImageUrl(activeProfile?.avatarId, avatarCatalog);
+  const activeProfileAvatarUrl = String(activeProfile?.avatarUrl || "").trim()
+    || AvatarRepository.getAvatarImageUrl(activeProfile?.avatarId, avatarCatalog);
 
   return {
     activeProfileName: String(activeProfile?.name || t("sidebar.profileFallback")).trim() || t("sidebar.profileFallback"),

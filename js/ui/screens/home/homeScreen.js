@@ -1428,7 +1428,7 @@ function buildSidebarProfileSignature(profile = null) {
     profile.name || "",
     profile.avatarColorHex || "",
     profile.avatarId || "",
-    profile.imageUrl || ""
+    profile.avatarUrl || profile.activeProfileAvatarUrl || ""
   ].join("|");
 }
 

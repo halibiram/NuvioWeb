@@ -17,6 +17,7 @@ function normalizeProfile(profile, index = 0) {
     profileIndex: normalizedIndex,
     avatarColorHex: String(profile?.avatarColorHex || "#1E88E5"),
     avatarId: profile?.avatarId || profile?.avatar_id || null,
+    avatarUrl: String(profile?.avatarUrl || profile?.avatar_url || "").trim() || null,
     isPrimary: Boolean(profile?.isPrimary || normalizedIndex === 1),
     usesPrimaryAddons: Boolean(profile?.usesPrimaryAddons),
     usesPrimaryPlugins: Boolean(profile?.usesPrimaryPlugins)
@@ -54,6 +55,7 @@ export const ProfileManager = {
     name,
     avatarColorHex = "#1E88E5",
     avatarId = null,
+    avatarUrl = null,
     usesPrimaryAddons = false,
     usesPrimaryPlugins = false
   } = {}) {
@@ -76,6 +78,7 @@ export const ProfileManager = {
         name: trimmedName,
         avatarColorHex,
         avatarId,
+        avatarUrl,
         isPrimary: false,
         usesPrimaryAddons,
         usesPrimaryPlugins

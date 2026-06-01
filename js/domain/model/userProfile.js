@@ -3,13 +3,15 @@ export function createUserProfile({
   name,
   avatarColorHex = "#1E88E5",
   isPrimary = false,
-  avatarId = null
+  avatarId = null,
+  avatarUrl = null
 }) {
   return {
     id,
     name,
     avatarColorHex,
     isPrimary,
-    avatarId
+    avatarId,
+    avatarUrl
   };
 }

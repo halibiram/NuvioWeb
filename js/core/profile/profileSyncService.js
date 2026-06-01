@@ -42,6 +42,7 @@ function mapProfileRow(row = {}) {
     name: row.name || `Profile ${normalizedIndex}`,
     avatarColorHex: row.avatar_color_hex || row.avatarColorHex || "#1E88E5",
     avatarId: row.avatar_id || row.avatarId || null,
+    avatarUrl: row.avatar_url || row.avatarUrl || null,
     usesPrimaryAddons: typeof row.uses_primary_addons === "boolean"
       ? row.uses_primary_addons
       : Boolean(row.usesPrimaryAddons),
@@ -104,11 +105,13 @@ export const ProfileSyncService = {
         await SupabaseApi.rpc(PUSH_RPC, {
           p_profiles: profiles.map((profile) => {
             const profileIndex = Number(profile.profileIndex || profile.id || 1);
+            const avatarUrl = String(profile.avatarUrl || "").trim() || null;
             return {
               profile_index: Number.isFinite(profileIndex) && profileIndex > 0 ? Math.trunc(profileIndex) : 1,
               name: profile.name,
               avatar_color_hex: profile.avatarColorHex || "#1E88E5",
-              avatar_id: profile.avatarId || null,
+              avatar_id: avatarUrl ? null : (profile.avatarId || null),
+              avatar_url: avatarUrl,
               uses_primary_addons: Boolean(profile.usesPrimaryAddons),
               uses_primary_plugins: Boolean(profile.usesPrimaryPlugins)
             };
@@ -122,13 +125,15 @@ export const ProfileSyncService = {
       const ownerId = await AuthManager.getEffectiveUserId();
       const rows = profiles.map((profile) => {
         const profileIndex = Number(profile.profileIndex || profile.id || 1);
+        const avatarUrl = String(profile.avatarUrl || "").trim() || null;
         return {
           id: profile.id,
           owner_id: ownerId,
           profile_index: Number.isFinite(profileIndex) && profileIndex > 0 ? Math.trunc(profileIndex) : 1,
           name: profile.name,
           avatar_color_hex: profile.avatarColorHex || "#1E88E5",
-          avatar_id: profile.avatarId || null,
+          avatar_id: avatarUrl ? null : (profile.avatarId || null),
+          avatar_url: avatarUrl,
           uses_primary_addons: Boolean(profile.usesPrimaryAddons),
           uses_primary_plugins: Boolean(profile.usesPrimaryPlugins),
           is_primary: Boolean(profile.isPrimary)
@@ -141,6 +146,7 @@ export const ProfileSyncService = {
         name: row.name,
         avatar_color_hex: row.avatar_color_hex,
         avatar_id: row.avatar_id || null,
+        avatar_url: row.avatar_url || null,
         uses_primary_addons: Boolean(row.uses_primary_addons),
         uses_primary_plugins: Boolean(row.uses_primary_plugins)
       }));
