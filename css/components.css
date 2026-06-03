@@ -4633,6 +4633,10 @@ button:focus-visible {
 .home-screen-shell .home-poster-card .content-poster,
 .home-screen-shell .home-poster-card .home-poster-expanded-backdrop {
   position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   inset: 0;
   display: block;
   width: 100%;
@@ -13326,12 +13330,19 @@ button:focus-visible {
 
 .series-episode-overlay {
   position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   inset: 0;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.18) 22%, rgba(0, 0, 0, 0.62) 52%, rgba(0, 0, 0, 0.86) 82%, rgba(0, 0, 0, 0.95) 100%);
 }
 
 .series-episode-copy {
   position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
   inset: auto 0 0;
   padding: clamp(22px, 1.5vw, 30px) clamp(22px, 1.5vw, 30px) clamp(26px, 1.8vw, 34px);
   display: flex;
@@ -14396,6 +14407,136 @@ button:focus-visible {
   margin-right: 0;
 }
 
+.no-flex-gap .home-track > .home-content-card,
+.no-flex-gap .home-modern-row .home-track > .home-content-card {
+  margin-right: 20px;
+}
+
+.no-flex-gap .home-screen-shell.home-layout-modern .home-track > .home-content-card {
+  margin-right: 24px;
+}
+
+.no-flex-gap .home-track > .home-content-card:last-child,
+.no-flex-gap .home-modern-row .home-track > .home-content-card:last-child,
+.no-flex-gap .home-screen-shell.home-layout-modern .home-track > .home-content-card:last-child {
+  margin-right: 0;
+}
+
+.no-flex-gap .series-detail-actions > *,
+.no-flex-gap .detail-ratings-row > *,
+.no-flex-gap .detail-meta-row > *,
+.no-flex-gap .series-season-row > *,
+.no-flex-gap .series-episode-track > *,
+.no-flex-gap .movie-cast-track > *,
+.no-flex-gap .series-cast-track > *,
+.no-flex-gap .series-rating-seasons > *,
+.no-flex-gap .series-episode-ratings-grid > *,
+.no-flex-gap .detail-company-track > *,
+.no-flex-gap .detail-morelike-track > *,
+.no-flex-gap .detail-comments-modes > *,
+.no-flex-gap .detail-comments-track > * {
+  margin-right: 24px;
+}
+
+.no-flex-gap .series-detail-actions > * {
+  margin-right: 20px;
+}
+
+.no-flex-gap .series-season-row > * {
+  margin-right: 24px;
+}
+
+.no-flex-gap .series-episode-track > * {
+  margin-right: 40px;
+}
+
+.no-flex-gap .movie-cast-track > *,
+.no-flex-gap .series-cast-track > * {
+  margin-right: 16px;
+}
+
+.no-flex-gap .detail-meta-row > * {
+  margin-bottom: 8px;
+}
+
+.no-flex-gap .series-detail-actions > *:last-child,
+.no-flex-gap .detail-ratings-row > *:last-child,
+.no-flex-gap .detail-meta-row > *:last-child,
+.no-flex-gap .series-season-row > *:last-child,
+.no-flex-gap .series-episode-track > *:last-child,
+.no-flex-gap .movie-cast-track > *:last-child,
+.no-flex-gap .series-cast-track > *:last-child,
+.no-flex-gap .series-rating-seasons > *:last-child,
+.no-flex-gap .series-episode-ratings-grid > *:last-child,
+.no-flex-gap .detail-company-track > *:last-child,
+.no-flex-gap .detail-morelike-track > *:last-child,
+.no-flex-gap .detail-comments-modes > *:last-child,
+.no-flex-gap .detail-comments-track > *:last-child {
+  margin-right: 0;
+}
+
+.no-flex-gap .series-primary-btn > *,
+.no-flex-gap .detail-rating-item > *,
+.no-flex-gap .series-imdb-badge > *,
+.no-flex-gap .detail-meta-badge > *,
+.no-flex-gap .series-episode-runtime > *,
+.no-flex-gap .detail-comments-heading > * {
+  margin-right: 8px;
+}
+
+.no-flex-gap .series-primary-btn > *:last-child,
+.no-flex-gap .detail-rating-item > *:last-child,
+.no-flex-gap .series-imdb-badge > *:last-child,
+.no-flex-gap .detail-meta-badge > *:last-child,
+.no-flex-gap .series-episode-runtime > *:last-child,
+.no-flex-gap .detail-comments-heading > *:last-child {
+  margin-right: 0;
+}
+
+.no-flex-gap .detail-meta-stack > * + *,
+.no-flex-gap .series-episode-copy > * + *,
+.no-flex-gap .detail-comments-heading + *,
+.no-flex-gap .detail-trailer-controls-bottom > * + * {
+  margin-top: 12px;
+}
+
+.no-flex-gap .cast-credit-track > * {
+  margin-right: 14px;
+}
+
+.no-flex-gap .cast-credit-track > *:last-child {
+  margin-right: 0;
+}
+
+.no-aspect-ratio .home-content-card .content-poster {
+  height: 450px;
+}
+
+.no-aspect-ratio .home-screen-shell .home-poster-frame,
+.no-aspect-ratio .home-screen-shell.home-layout-grid .home-grid-track .home-seeall-card {
+  height: calc(var(--home-poster-width) * 1.5);
+}
+
+.no-aspect-ratio .home-screen-shell .home-poster-card .content-poster {
+  height: 100%;
+}
+
+.no-aspect-ratio .home-screen-shell.home-layout-modern .home-poster-frame {
+  height: var(--home-poster-height);
+}
+
+.no-aspect-ratio .home-screen-shell.home-layout-modern .home-poster-card:not(.is-landscape) .home-poster-frame {
+  height: var(--home-modern-portrait-poster-height);
+}
+
+.no-aspect-ratio .home-screen-shell.home-layout-modern .home-poster-card.is-landscape .home-poster-frame {
+  height: var(--home-landscape-poster-height);
+}
+
+.no-aspect-ratio .cast-credit-poster {
+  height: 360px;
+}
+
 @supports not (font-size: clamp(1px, 2px, 3px)) {
   .home-screen-shell.home-layout-modern .home-hero,
   .home-screen-shell.home-layout-modern .home-modern-hero-card {
@@ -14649,20 +14790,12 @@ button:focus-visible {
   cursor: pointer;
 }
 
-.tizen-tv .home-screen-shell.home-layout-modern .home-hero-trailer-layer {
-  display: none;
-}
-
 .tizen-tv .home-screen-shell.home-layout-modern .home-modern-hero-media::before {
   background: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.78) 28%, rgba(0, 0, 0, 0.28) 56%, rgba(0, 0, 0, 0) 100%);
 }
 
 .tizen-tv .home-screen-shell.home-layout-modern .home-modern-hero-media::after {
   background: linear-gradient(180deg, transparent 88%, rgba(0, 0, 0, 0.62) 100%);
-}
-
-.tizen-tv .home-screen-shell.home-layout-modern .home-modern-hero-media.trailer-active .home-hero-backdrop {
-  opacity: 1;
 }
 
 .legacy-webos .stream-route-shell {

@@ -509,7 +509,7 @@ function renderStreamAddonIcon(addonName = "") {
   }
   return `
     <span class="series-stream-addon-badge" aria-hidden="true">
-      <img class="series-stream-addon-icon" src="${escapeHtml(iconPath)}" alt="" decoding="async" onerror="this.hidden=true;const fallback=this.nextElementSibling;if(fallback){fallback.hidden=false;}" />
+      <img class="series-stream-addon-icon" src="${escapeHtml(iconPath)}" alt="" decoding="async" onerror="this.hidden=true;var fallback=this.nextElementSibling;if(fallback){fallback.hidden=false;}" />
       <span class="series-stream-addon-fallback" hidden>${fallback}</span>
     </span>
   `;
@@ -3630,7 +3630,7 @@ export const MetaDetailsScreen = {
            data-backdrop-src="${escapeHtml(item.background || item.backdrop || item.landscapePoster || primaryImage || "")}">
         <div class="detail-morelike-poster-wrap">
           ${primaryImage
-            ? `<img class="detail-morelike-poster-image" src="${escapeHtml(primaryImage)}" alt="${escapeHtml(item.name || "content")}" loading="lazy" decoding="async"${fallbackImage ? ` data-fallback-src="${escapeHtml(fallbackImage)}"` : ""} onerror="const next=this.dataset.fallbackSrc||''; if(next && this.src !== next){ this.src = next; this.dataset.fallbackSrc=''; return; } this.hidden = true; const placeholder = this.nextElementSibling; if(placeholder){ placeholder.hidden = false; }" />`
+            ? `<img class="detail-morelike-poster-image" src="${escapeHtml(primaryImage)}" alt="${escapeHtml(item.name || "content")}" loading="lazy" decoding="async"${fallbackImage ? ` data-fallback-src="${escapeHtml(fallbackImage)}"` : ""} onerror="var next=this.dataset.fallbackSrc||''; if(next && this.src !== next){ this.src = next; this.dataset.fallbackSrc=''; return; } this.hidden = true; var placeholder = this.nextElementSibling; if(placeholder){ placeholder.hidden = false; }" />`
             : ""}
           <div class="detail-morelike-poster placeholder"${primaryImage ? " hidden" : ""}></div>
         </div>
